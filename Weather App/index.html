@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <title>Weather</title>
+</head>
+<body>
+    <div class="card">
+        <div class="search">
+            <input type="text" placeholder="Enter City Name" spellcheck="false">
+            <button><img src="search.png" alt=""></button>
+        </div>
+        <div class="error" style="display: none;">
+            <p>Invalid city name</p>
+        </div>
+        <div class="weather" style="display: none;">
+            <img src="rain.png" class="weather-icon">
+            <h1 class="temp">26°C</h1>
+            <h2 class="city">Balanagar, TG</h2>
+            <div class="details">
+                <div class="col">
+                    <img src="humidity.png">
+                    <div>
+                        <p class="humidity">50%</p>
+                        <p>humidity</p>
+                    </div>
+                </div>
+                <div class="col">
+                    <img src="wind.png">
+                    <div>
+                        <p class="wind">15 km/h</p>
+                        <p>wind</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        const apikey = "ecdfadc0ad3ac38c071038cb6dd7bd9d";
+        const apiurl = "https://api.openweathermap.org/data/2.5/weather?";
+
+        const searchBox = document.querySelector(".search input");
+        const searchBtn = document.querySelector(".search button");
+        const weatherIcon = document.querySelector(".weather-icon");
+
+        async function checkWeather(city) {
+            const response = await fetch(`${apiurl}q=${city}&appid=${apikey}&units=metric`);
+            if (response.status == 404) {
+                document.querySelector(".weather").style.display = "none";
+                document.querySelector(".error").style.display = "block";
+            } else {
+                const data = await response.json();
+
+                document.querySelector(".city").innerHTML = data.name;
+                document.querySelector(".temp").innerHTML = Math.round(data.main.temp) + "°C";
+                document.querySelector(".humidity").innerHTML = data.main.humidity + "%";
+                document.querySelector(".wind").innerHTML = data.wind.speed + " km/h";
+
+                switch (data.weather[0].main) {
+                    case "Clouds":
+                        weatherIcon.src = "clouds.png";
+                        break;
+                    case "Clear":
+                        weatherIcon.src = "clear.png";
+                        break;
+                    case "Rain":
+                        weatherIcon.src = "rain.png";
+                        break;
+                    case "Drizzle":
+                        weatherIcon.src = "drizzle.png";
+                        break;
+                    case "Mist":
+                        weatherIcon.src = "mist.png";
+                        break;
+                    default:
+                        weatherIcon.src = "default.png";
+                }
+
+                document.querySelector(".weather").style.display = "block";
+                document.querySelector(".error").style.display = "none";
+            }
+        }
+
+        searchBtn.addEventListener("click", () => {
+            checkWeather(searchBox.value);
+        });
+
+        checkWeather("Balanagar");
+    </script>
+
+</body>
+</html>
